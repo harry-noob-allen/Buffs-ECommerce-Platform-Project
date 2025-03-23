@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2e8b57;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Consistent spacing between buttons */
+        }
+
+        .navbar .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .navbar .dropdown button {
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .navbar .dropdown button:hover {
+            background-color: #256b47;
+        }
+
+        .navbar .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .navbar .dropdown-content a {
+            color: black;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+        }
+
+        .navbar .dropdown-content a:hover {
+            background-color: #f4f4f4;
+        }
+
+        .navbar .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .cart-button {
+            background-color: #1e90ff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cart-button:hover {
+            background-color: #187bcd;
+        }
+
+
+        /* Product Details Section */
+        .product-details {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            width: 90%;
+            margin: 40px auto;
+        }
+        .product-image {
+            flex: 1;
+            text-align: center;
+        }
+        .product-image img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 8px;
+        }
+        .carousel-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .carousel-buttons button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            background-color: #2e8b57;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .carousel-buttons button:hover {
+            background-color: #256b47;
+        }
+        .product-info {
+            flex: 2;
+        }
+        .product-info h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: #333;
+        }
+        .product-info .price {
+            font-size: 1.8rem;
+            color: #2e8b57;
+            margin: 10px 0;
+        }
+        .product-info .description {
+            font-size: 1rem;
+            color: #555;
+            margin-top: 15px;
+        }
+        .quantity-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .quantity-container span {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .quantity-container button {
+            padding: 5px 10px;
+            font-size: 1rem;
+            border: none;
+            background-color: #2e8b57;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .quantity-container button:hover {
+            background-color: #256b47;
+        }
+        .quantity-container input {
+            width: 50px;
+            text-align: center;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .add-to-cart-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-to-cart-button:hover {
+            background-color: #256b47;
+        }
+        /* Remove the arrows (spinner) from the quantity input */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield; /* For Firefox */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h1>Buffs E-commerce</h1>
+        <div class="navbar-links">
+            <div class="dropdown">
+                <button>Categories</button>
+                <div class="dropdown-content" id="dropdown-menu">
+                    <!-- Categories will be populated dynamically -->
+                </div>
+            </div>
+            <div class="dropdown">
+                <button>Login</button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="openModal('login-modal')">Login</a>
+                    <a href="#" onclick="openModal('signup-modal')">Sign Up</a>
+                </div>
+            </div>
+            <a href="cart.html" class="cart-button">Cart</a>
+        </div>
+    </div>
+    
+
+    <!-- Product Details Section -->
+    <div class="product-details">
+        <!-- Image Section -->
+        <div class="product-image">
+            <img id="product-large-image" src="" alt="Product Image">
+            <div class="carousel-buttons">
+                <button onclick="showImage(1)">Image 1</button>
+                <button onclick="showImage(2)">Image 2</button>
+            </div>
+        </div>
+        <!-- Product Information -->
+        <div class="product-info">
+            <h1 id="product-title">Product Title</h1>
+            <div class="price" id="product-price">$0.00</div>
+            <p class="description" id="product-description">Product description will appear here...</p>
+
+            <!-- Quantity Section -->
+            <div class="quantity-container">
+                <span>Quantity:</span>
+                <button onclick="decreaseQuantity()">-</button>
+                <input id="quantity-input" type="number" value="1" min="1">
+                <button onclick="increaseQuantity()">+</button>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <button class="add-to-cart-button" onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+
+    <script>
+        // Parse ProductID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get("productId");
+
+        // Function to generate a dynamic description
+        function generateDescription(product) {
+            const templates = [
+                `The ${product.Name} is a must-have for anyone looking to enhance their ${product.Category.toLowerCase()} experience. Crafted with precision and designed for durability, it guarantees exceptional performance and unmatched reliability.`,
+                `With its remarkable quality, innovative features, and affordable price, the ${product.Name} stands out as a leader in the ${product.Category.toLowerCase()} category. It's an investment that delivers both value and satisfaction.`,
+                `Transform your ${product.Category.toLowerCase()} experience with the ${product.Name}. Engineered for performance and ease of use, this product is perfect for professionals and enthusiasts alike.`,
+                `The ${product.Name} combines cutting-edge technology and sleek design to create a product that not only performs exceptionally but also adds a touch of elegance to your ${product.Category.toLowerCase()} setup.`,
+                `Whether you're a beginner or a seasoned pro, the ${product.Name} is tailored to meet your ${product.Category.toLowerCase()} needs. Its advanced features and robust construction make it an indispensable tool for any user.`,
+                `Step into the future of ${product.Category.toLowerCase()} with the ${product.Name}. This product is thoughtfully designed to provide a seamless and enjoyable experience, ensuring you always stay ahead of the curve.`,
+                `Designed with both style and functionality in mind, the ${product.Name} is a versatile addition to any ${product.Category.toLowerCase()} setup. Its premium build quality and superior performance make it a top choice.`,
+                `Elevate your ${product.Category.toLowerCase()} needs with the ${product.Name}. From its ergonomic design to its exceptional capabilities, this product is crafted to deliver satisfaction and long-lasting performance.`,
+                `Experience the ultimate in convenience and efficiency with the ${product.Name}. Built for modern users, it seamlessly integrates into your ${product.Category.toLowerCase()} workflow, making it indispensable.`,
+                `The ${product.Name} offers unparalleled versatility, making it a standout product in the ${product.Category.toLowerCase()} market. With its impressive features and dependable performance, it's a product you can trust.`,
+                `For those who demand the very best, the ${product.Name} delivers on every front. This ${product.Category.toLowerCase()} product boasts a blend of innovation, quality, and performance that sets it apart.`,
+                `Take your ${product.Category.toLowerCase()} game to new heights with the ${product.Name}. It's built with advanced technology and premium materials to provide an unbeatable combination of power and precision.`,
+                `The ${product.Name} isn't just another ${product.Category.toLowerCase()} product—it's a game-changer. With its intuitive design and superior functionality, it simplifies tasks and enhances productivity.`,
+                `Crafted with meticulous attention to detail, the ${product.Name} represents the pinnacle of ${product.Category.toLowerCase()} innovation. It's an investment that pays dividends in performance and reliability.`,
+                `Unleash your potential with the ${product.Name}, a product designed to redefine what’s possible in the ${product.Category.toLowerCase()} space. Its impressive feature set and top-notch build quality make it a must-have.`,
+                `The ${product.Name} is more than just a product; it's a solution for all your ${product.Category.toLowerCase()} needs. From its robust design to its cutting-edge technology, it's built to exceed expectations.`,
+                `Step up your ${product.Category.toLowerCase()} experience with the ${product.Name}. Built for modern users, it seamlessly blends performance, style, and functionality in one impressive package.`,
+                `The ${product.Name} delivers unparalleled performance in the ${product.Category.toLowerCase()} category. With its innovative features and sturdy design, it's a reliable companion for all your needs.`,
+                `Discover the perfect balance of form and function with the ${product.Name}. This exceptional ${product.Category.toLowerCase()} product combines stylish design with powerful features to deliver a superior user experience.`,
+                `Whether you're upgrading or starting fresh, the ${product.Name} is the ultimate choice in the ${product.Category.toLowerCase()} category. Its sleek design and outstanding capabilities make it an essential addition.`
+            ];
+            const randomIndex = Math.floor(Math.random() * templates.length);
+            return templates[randomIndex];
+        }
+
+        let largeImage1 = "";
+        let largeImage2 = "";
+
+        // Fetch product details from the backend
+        async function fetchProductDetails() {
+            try {
+                const response = await fetch(`https://us-central1-buffs-e-commerce-platform.cloudfunctions.net/product-api-2/getProductsforIndex?ProductID=${encodeURIComponent(productId)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const product = await response.json();
+
+                // Populate the page with product details
+                document.getElementById("product-title").innerText = product.Name;
+                document.getElementById("product-price").innerText = `$${product.Price.toFixed(2)}`;
+                document.getElementById("product-description").innerText = generateDescription(product);
+
+                // Set large images
+                largeImage1 = product.placeholder_large_image1 || "https://placehold.co/1200x800";
+                largeImage2 = product.placeholder_large_image2 || "https://placehold.co/1200x800";
+
+                // Display the first large image
+                document.getElementById("product-large-image").src = largeImage1;
+            } catch (error) {
+                console.error("Error fetching product details:", error);
+            }
+        }
+
+        // Function to switch between images
+        function showImage(imageNumber) {
+            const imageElement = document.getElementById("product-large-image");
+            if (imageNumber === 1) {
+                imageElement.src = largeImage1;
+            } else if (imageNumber === 2) {
+                imageElement.src = largeImage2;
+            }
+        }
+
+        // Quantity control functions
+        function increaseQuantity() {
+            const quantityInput = document.getElementById("quantity-input");
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+        }
+
+        function decreaseQuantity() {
+            const quantityInput = document.getElementById("quantity-input");
+            if (quantityInput.value > 1) {
+                quantityInput.value = parseInt(quantityInput.value) - 1;
+            }
+        }
+
+        // Add to Cart function
+        async function addToCart() {
+            const quantity = parseInt(document.getElementById("quantity-input").value);
+            const userId = localStorage.getItem("UserID"); // Retrieve UserID from local storage
+        
+            if (!userId) {
+                alert("User is not logged in. Please log in to add items to the cart.");
+                return;
+            }
+        
+            const item = {
+                ProductID: productId,
+                Quantity: quantity
+            };
+        
+            try {
+                const response = await fetch(`https://us-central1-buffs-e-commerce-platform.cloudfunctions.net/cart-api-2/add-to-cart/${userId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ Item: item })
+                });
+        
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Failed to add item to cart.");
+                }
+        
+                const result = await response.json();
+                alert(result.message || "Item added to cart successfully!");
+            } catch (error) {
+                console.error("Error adding item to cart:", error);
+                alert(error.message || "An error occurred. Please try again.");
+            }
+        }
+        
+        
+
+        // Fetch product details when the page loads
+        fetchProductDetails();
+    </script>
+</body>
+</html>

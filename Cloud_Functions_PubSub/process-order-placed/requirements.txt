@@ -1,0 +1,4 @@
+google-cloud-pubsub
+google-cloud-firestore
+google-cloud-logging
+google-cloud-bigquery==3.14.0

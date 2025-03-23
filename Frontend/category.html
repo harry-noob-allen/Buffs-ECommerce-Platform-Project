@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Products</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2e8b57;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Consistent spacing between buttons */
+        }
+
+        .navbar .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .navbar .dropdown button {
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .navbar .dropdown button:hover {
+            background-color: #256b47;
+        }
+
+        .navbar .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .navbar .dropdown-content a {
+            color: black;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+        }
+
+        .navbar .dropdown-content a:hover {
+            background-color: #f4f4f4;
+        }
+
+        .navbar .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .cart-button {
+            background-color: #1e90ff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .cart-button:hover {
+            background-color: #187bcd;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .product {
+            text-align: center;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .product img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .product .title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .product .price {
+            font-size: 1.1rem;
+            color: #2e8b57;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h1>Buffs E-commerce</h1>
+        <div class="navbar-links">
+            <div class="dropdown">
+                <button>Categories</button>
+                <div class="dropdown-content" id="dropdown-menu">
+                    <!-- Categories will be populated dynamically -->
+                </div>
+            </div>
+            <div class="dropdown">
+                <button>Login</button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="openModal('login-modal')">Login</a>
+                    <a href="#" onclick="openModal('signup-modal')">Sign Up</a>
+                </div>
+            </div>
+            <a href="cart.html" class="cart-button">Cart</a>
+        </div>
+    </div>
+    
+
+    <!-- Page Title -->
+    <h1 id="category-name">Category: </h1>
+
+    <!-- Products Container -->
+    <div class="container" id="product-container"></div>
+
+    <script>
+        const BASE_URL = "https://us-central1-buffs-e-commerce-platform.cloudfunctions.net/product-api-2/";
+
+        // Parse category from query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+
+        // Update the page title and header
+        document.getElementById('category-name').innerText = `Category: ${category || 'Unknown'}`;
+
+        // Fetch products from the backend
+        async function fetchProducts() {
+            try {
+                const response = await fetch(`${BASE_URL}/getProductsforIndex?Category=${encodeURIComponent(category)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const products = await response.json();
+
+                // Render products dynamically
+                renderProducts(products);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        }
+
+        // Render products dynamically
+        function renderProducts(products) {
+            const container = document.getElementById('product-container');
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <a href="product.html?productId=${encodeURIComponent(product.ProductID)}" style="text-decoration: none; color: inherit;">
+                        <img src="${product.placeholder_small_image || 'https://placehold.co/600x400'}" alt="${product.Name}">
+                        <div class="title">${product.Name}</div>
+                        <div class="price">$${product.Price.toFixed(2)}</div>
+                    </a>
+                `;
+                container.appendChild(productDiv);
+            });
+        }
+
+        // Fetch categories for the dropdown menu
+        async function fetchCategories() {
+            try {
+                const response = await fetch(`${BASE_URL}/getProductsforIndex`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const products = await response.json();
+                const categories = [...new Set(products.map(p => p.Category))];
+                const dropdownMenu = document.getElementById('dropdown-menu');
+                categories.forEach(category => {
+                    const categoryLink = document.createElement('a');
+                    categoryLink.href = `category.html?category=${encodeURIComponent(category)}`;
+                    categoryLink.textContent = category;
+                    dropdownMenu.appendChild(categoryLink);
+                });
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        }
+
+        // Load categories into the dropdown menu
+        fetchCategories();
+
+        // Fetch products for the selected category
+        fetchProducts();
+    </script>
+</body>
+</html>

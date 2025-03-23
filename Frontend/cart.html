@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2e8b57;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Consistent spacing between buttons */
+        }
+
+        .navbar .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .navbar .dropdown button {
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .navbar .dropdown button:hover {
+            background-color: #256b47;
+        }
+
+        .navbar .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .navbar .dropdown-content a {
+            color: black;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+        }
+
+        .navbar .dropdown-content a:hover {
+            background-color: #f4f4f4;
+        }
+
+        .navbar .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .cart-button {
+            background-color: #1e90ff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cart-button:hover {
+            background-color: #187bcd;
+        }
+
+        /*Main Cart Content*/
+        .cart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .cart-item img {
+            width: 100px;
+            height: auto;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+        .cart-item-details {
+            flex-grow: 1;
+        }
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+        }
+        .cart-item-quantity button {
+            width: 30px;
+            height: 30px;
+            font-size: 1.2rem;
+            margin: 0 5px;
+        }
+        .cart-item-quantity input[type="number"]::-webkit-inner-spin-button,
+        .cart-item-quantity input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .cart-item-quantity input[type="number"] {
+            -moz-appearance: textfield;
+            width: 50px; /* Adjust width to make it smaller */
+            font-size: 0.9rem; /* Adjust font size for smaller text */
+            text-align: center; /* Center-align the number */
+            padding: 5px; /* Adjust padding for a compact look */
+            border: 1px solid #ccc; /* Optional: make the border subtle */
+            border-radius: 5px; /* Optional: add a rounded look */
+        }
+
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .cart-actions button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .update-btn {
+            background-color: #2e8b57;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #c0392b;
+            color: white;
+        }
+        .order-summary-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .summary-details {
+            display: inline-block;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        .summary-details p {
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+        .summary-details p span {
+            float: right;
+        }
+        .order-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .checkout-button, .continue-shopping-button {
+            background-color: #1e90ff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+            margin: 0 5px;
+        }
+        .checkout-button:hover {
+            background-color: #187bcd;
+        }
+        .continue-shopping-button:hover {
+            background-color: #187bcd;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h1>Buffs E-commerce</h1>
+        <div class="navbar-links">
+            <div class="dropdown">
+                <button>Categories</button>
+                <div class="dropdown-content" id="dropdown-menu">
+                    <!-- Categories will be populated dynamically -->
+                </div>
+            </div>
+            <div class="dropdown">
+                <button>Login</button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="openModal('login-modal')">Login</a>
+                    <a href="#" onclick="openModal('signup-modal')">Sign Up</a>
+                </div>
+            </div>
+            <a href="cart.html" class="cart-button">Cart</a>
+        </div>
+    </div>
+    <div class="cart-container">
+        <h1>Your Cart</h1>
+        <div id="cart-items"></div>
+
+        <!-- Order Summary -->
+        <div class="order-summary-container">
+            <div class="summary-details">
+                <p>Original Price: <span id="original-price">$0.00</span></p>
+                <p>Tax (10%): <span id="tax">$0.00</span></p>
+                <p><strong>Total: <span id="total-price">$0.00</span></strong></p>
+            </div>
+            <div class="order-buttons">
+                <button class="continue-shopping-button" onclick="redirectToHome()">Continue Shopping</button>
+                <button class="checkout-button" onclick="finalizeCart()">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = "https://us-central1-buffs-e-commerce-platform.cloudfunctions.net/cart-api-2"; // Update with your backend URL
+        const userId = localStorage.getItem("UserID"); // Ensure this is stored during login
+
+        // Fetch cart details
+        async function fetchCart() {
+            try {
+                const response = await fetch(`${BASE_URL}/get-cart?UserID=${userId}`);
+                if (!response.ok) throw new Error("Failed to fetch cart data.");
+                const cart = await response.json();
+
+                const cartItemsContainer = document.getElementById("cart-items");
+                const originalPriceElement = document.getElementById("original-price");
+                const taxElement = document.getElementById("tax");
+                const totalPriceElement = document.getElementById("total-price");
+
+                cartItemsContainer.innerHTML = ""; // Clear previous items
+
+                let originalPrice = 0;
+
+                if (cart.Items && cart.Items.length > 0) {
+                    cart.Items.forEach((item, index) => {
+                        const itemDiv = document.createElement("div");
+                        itemDiv.classList.add("cart-item");
+
+                        // Calculate original price
+                        originalPrice += item.Price * item.Quantity;
+
+                        itemDiv.innerHTML = `
+                        <img src="${item.placeholder_small_image || 'https://placehold.co/600x400'}" alt="${item.Name}" />
+                        <div class="cart-item-details">
+                            <h3>${item.Name}</h3>
+                            <p>Price: $${item.Price.toFixed(2)}</p>
+                        </div>
+                        <div class="cart-item-quantity">
+                            <button onclick="updateQuantity(${index}, -1)">-</button>
+                            <input type="number" value="${item.Quantity}" id="quantity-${index}" readonly />
+                            <button onclick="updateQuantity(${index}, 1)">+</button>
+                        </div>
+                        <div class="cart-actions">
+                            <button class="update-btn" onclick="updateCart(${index})">Update Cart</button>
+                            <button class="delete-btn" onclick="deleteItem(${index})">Delete</button>
+                        </div>
+                    `;
+                    
+                    
+
+                        cartItemsContainer.appendChild(itemDiv);
+                    });
+
+                    // Calculate tax and total
+                    const tax = originalPrice * 0.1; // 10% tax
+                    const total = originalPrice + tax;
+
+                    // Update the order summary
+                    originalPriceElement.innerText = `$${originalPrice.toFixed(2)}`;
+                    taxElement.innerText = `$${tax.toFixed(2)}`;
+                    totalPriceElement.innerText = `$${total.toFixed(2)}`;
+                } else {
+                    cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+                    originalPriceElement.innerText = "$0.00";
+                    taxElement.innerText = "$0.00";
+                    totalPriceElement.innerText = "$0.00";
+                }
+            } catch (error) {
+                console.error("Error fetching cart:", error);
+            }
+        }
+
+        function updateQuantity(index, delta) {
+            const quantityInput = document.getElementById(`quantity-${index}`);
+            let currentQuantity = parseInt(quantityInput.value, 10);
+        
+            if (isNaN(currentQuantity)) {
+                currentQuantity = 1; // Default to 1 if the value is invalid
+            }
+        
+            const newQuantity = currentQuantity + delta;
+        
+            if (newQuantity < 1) {
+                alert("Quantity cannot be less than 1.");
+                return;
+            }
+        
+            // Update the input field with the new quantity
+            quantityInput.value = newQuantity;
+        }
+        
+
+        async function updateCart(index) {
+            const quantityInput = document.getElementById(`quantity-${index}`);
+            const newQuantity = parseInt(quantityInput.value, 10);
+        
+            if (isNaN(newQuantity) || newQuantity <= 0) {
+                alert("Invalid quantity. Please enter a number greater than 0.");
+                return;
+            }
+        
+            try {
+                const response = await fetch(`${BASE_URL}/update-cart`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        UserID: userId,
+                        ItemIndex: index,
+                        Quantity: newQuantity,
+                    }),
+                });
+        
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Failed to update cart.");
+                }
+        
+                alert("Cart updated successfully!");
+                fetchCart(); // Reload the cart to reflect the updates
+            } catch (error) {
+                console.error("Error updating cart:", error);
+                alert(error.message || "An error occurred while updating the cart.");
+            }
+        }
+        
+        async function deleteItem(index) {
+            if (!confirm("Are you sure you want to remove this item from your cart?")) {
+                return; // User canceled the deletion
+            }
+        
+            try {
+                const response = await fetch(`${BASE_URL}/remove-from-cart`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        UserID: userId,
+                        ItemIndex: index,
+                    }),
+                });
+        
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Failed to remove item from cart.");
+                }
+        
+                alert("Item removed successfully!");
+                fetchCart(); // Reload the cart to reflect the changes
+            } catch (error) {
+                console.error("Error removing item:", error);
+                alert(error.message || "An error occurred while removing the item.");
+            }
+        }
+        
+        
+
+        // Redirect to home page
+        function redirectToHome() {
+            window.location.href = "index.html";
+        }
+
+
+        async function finalizeCart() {
+            const userId = localStorage.getItem("UserID"); // Retrieve UserID from localStorage
+        
+            if (!userId) {
+                alert("User not logged in. Please log in to proceed with checkout.");
+                return;
+            }
+        
+            try {
+                // Make the API call to finalize the cart
+                const response = await fetch(
+                    `${BASE_URL}/finalize-cart`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            UserID: userId,
+                        }),
+                    }
+                );
+        
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Failed to finalize the cart.");
+                }
+        
+                const data = await response.json();
+        
+                // Show success alert with total price
+                alert(`Checkout successful! Total Price: $${data.total_price}`);
+        
+                // Redirect to purchase.html
+                window.location.href = `purchase.html?total=${data.total_price}`;
+            } catch (error) {
+                console.error("Error finalizing cart:", error);
+                alert(error.message || "An error occurred during checkout.");
+            }
+        }
+
+        // Load cart on page load
+        window.onload = fetchCart;
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+        .payment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #2e8b57;
+        }
+        form {
+            margin-top: 20px;
+            text-align: left;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .submit-button {
+            background-color: #1e90ff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .submit-button:hover {
+            background-color: #187bcd;
+        }
+        .summary-container {
+            margin-top: 20px;
+            text-align: left;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .summary-container p {
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+        .summary-container p span {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Complete Your Payment</h1>
+        <p>Please enter your payment details below to finalize the purchase.</p>
+
+        <!-- Order Summary -->
+        <div class="summary-container">
+            <p>Order Total: <span id="order-total">$0.00</span></p>
+        </div>
+
+        <!-- Payment Form -->
+        <form id="payment-form" onsubmit="handlePayment(event)">
+            <label for="cardholder-name">Cardholder Name</label>
+            <input type="text" id="cardholder-name" name="cardholder-name" placeholder="John Doe" required />
+
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" name="card-number" placeholder="1234 5678 9012 3456" maxlength="16" required />
+
+            <label for="expiry-date">Expiry Date</label>
+            <input type="date" id="expiry-date" name="expiry-date" required />
+
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="3" required />
+
+            <button type="submit" class="submit-button">Submit Payment</button>
+        </form>
+    </div>
+
+    <script>
+        // Populate the order total dynamically
+        const queryParams = new URLSearchParams(window.location.search);
+        const totalAmount = queryParams.get("total");
+        
+        if (totalAmount) {
+            document.getElementById("order-total").textContent = `$${parseFloat(totalAmount).toFixed(2)}`;
+        }
+
+        // Handle payment submission
+        async function handlePayment(event) {
+            event.preventDefault();
+
+
+            // Collect payment details
+            const paymentDetails = {
+                userId: localStorage.getItem("UserID"),
+                cardholderName: document.getElementById("cardholder-name").value.trim(),
+                cardNumber: document.getElementById("card-number").value.trim(),
+                expiryDate: document.getElementById("expiry-date").value.trim(),
+                cvv: document.getElementById("cvv").value.trim(),
+                totalAmount: totalAmount || "0.00"
+            };
+
+            // Client-side validation
+            if (paymentDetails.cardNumber.length !== 16 || !/^\d+$/.test(paymentDetails.cardNumber)) {
+                alert("Please enter a valid 16-digit card number.");
+                return;
+            }
+
+            if (new Date(paymentDetails.expiryDate) < new Date()) {
+                alert("The expiry date is invalid or has already passed.");
+                return;
+            }
+
+            if (paymentDetails.cvv.length !== 3 || !/^\d+$/.test(paymentDetails.cvv)) {
+                alert("Please enter a valid 3-digit CVV.");
+                return;
+            }
+
+            try {
+                // Simulate payment processing with an API call
+                const response = await fetch("https://us-central1-buffs-e-commerce-platform.cloudfunctions.net/purchase-api/process-payment", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(paymentDetails)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || "Payment failed.");
+                }
+
+                // Handle successful payment
+                alert("Payment successful! Thank you for your purchase.");
+                window.location.href = "thankyou.html";
+            } catch (error) {
+                // Handle payment failure
+                console.error("Payment error:", error);
+                alert(`Payment failed: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
